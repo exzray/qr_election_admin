@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
-import com.google.firebase.database.annotations.NotNull;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
@@ -34,7 +33,7 @@ public class StudentFormController extends ControllerExtended implements Initial
     // component
     private QueryDocumentSnapshot snapshot;
     private ToggleGroup toggle;
-    private ListenerRegistration findRegistration, updateRegistration;
+    private ListenerRegistration findRegistration;
 
     @FXML
     private JFXTextField text_matrik, text_email, text_name, text_course, text_image;
@@ -121,6 +120,8 @@ public class StudentFormController extends ControllerExtended implements Initial
             firestore
                     .document("students/" + record.getUid())
                     .set(student);
+
+            resetStudent();
 
         } catch (FirebaseAuthException e) {
             e.printStackTrace();
@@ -234,15 +235,13 @@ public class StudentFormController extends ControllerExtended implements Initial
     }
 
     private void resetStudent() {
-        if (snapshot != null) {
-            snapshot = null;
+        snapshot = null;
 
-            text_matrik.clear();
-            text_name.clear();
-            text_email.clear();
-            text_password.clear();
-            text_course.clear();
-            text_image.clear();
-        }
+        text_matrik.clear();
+        text_name.clear();
+        text_email.clear();
+        text_password.clear();
+        text_course.clear();
+        text_image.clear();
     }
 }
