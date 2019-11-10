@@ -5,12 +5,18 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.ListenerRegistration;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -26,6 +32,8 @@ import sample.utility.ControllerExtended;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
@@ -211,7 +219,25 @@ public class DashboardController extends ControllerExtended implements Initializ
                 QueryDocumentSnapshot snapshot = row.getItem();
                 Election election = snapshot.toObject(Election.class);
 
-                
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        QRCodeWriter codeWriter = new QRCodeWriter();
+
+                        try {
+                            BitMatrix bitMatrix = codeWriter.encode(snapshot.getId(), BarcodeFormat.QR_CODE, 350, 350);
+                            Path path = FileSystems.getDefault().getPath("./" + election.getTitle() + ".png");
+                            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+                        } catch (WriterException | IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return null;
+                    }
+                };
+
+                Thread thread = new Thread(task);
+                thread.start();
             }
         }
     }
