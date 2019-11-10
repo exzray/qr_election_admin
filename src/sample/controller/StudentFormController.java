@@ -1,6 +1,9 @@
 package sample.controller;
 
 import com.google.cloud.firestore.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.database.annotations.NotNull;
 import com.jfoenix.controls.JFXButton;
@@ -91,7 +94,6 @@ public class StudentFormController extends ControllerExtended implements Initial
                                 Student student = snapshot.toObject(Student.class);
 
                                 text_email.setText(student.getEmail());
-                                text_password.setText("123456");
                                 text_name.setText(student.getName());
                                 text_course.setText(student.getCourse());
                                 text_image.setText(student.getImage());
@@ -107,8 +109,22 @@ public class StudentFormController extends ControllerExtended implements Initial
                 });
     }
 
-    private void createStudent(Student student) {
-        System.out.println("create");
+    private void createStudent(Student student, String email, String pass) {
+
+        UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+                .setEmail(email)
+                .setPassword(pass);
+
+        try {
+            UserRecord record = FirebaseAuth.getInstance().createUser(request);
+
+            firestore
+                    .document("students/" + record.getUid())
+                    .set(student);
+
+        } catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateStudent(Student student) {
@@ -152,6 +168,10 @@ public class StudentFormController extends ControllerExtended implements Initial
             @Override
             public void handle(MouseEvent event) {
                 // student data
+                String email = text_email.getText().trim();
+                String pass = text_password.getText().trim();
+
+                String matrik = text_matrik.getText().trim();
                 String name = text_name.getText().trim();
                 String course = text_course.getText().trim();
                 String image = text_image.getText().trim();
@@ -162,12 +182,14 @@ public class StudentFormController extends ControllerExtended implements Initial
                 if (snapshot != null) student = snapshot.toObject(Student.class);
                 else student = new Student();
 
+                student.setMatrik_id(matrik);
                 student.setName(name);
+                student.setEmail(email);
                 student.setCourse(course);
                 student.setImage(image);
 
                 if (snapshot != null) updateStudent(student);
-                else createStudent(student);
+                else createStudent(student, email, pass);
             }
         });
     }
