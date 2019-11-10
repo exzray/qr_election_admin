@@ -8,25 +8,18 @@ import com.google.firebase.cloud.FirestoreClient;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.MouseEvent;
 import sample.model.Student;
 import sample.utility.ControllerExtended;
 
-import javax.annotation.Nullable;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executor;
 
 public class StudentFormController extends ControllerExtended implements Initializable {
 
@@ -82,27 +75,24 @@ public class StudentFormController extends ControllerExtended implements Initial
 
         findRegistration = ref
                 .whereEqualTo("matrik_id", matrik_id)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirestoreException error) {
-                        if (value != null) {
-                            List<QueryDocumentSnapshot> list = value.getDocuments();
+                .addSnapshotListener((value, error) -> {
+                    if (value != null) {
+                        List<QueryDocumentSnapshot> list = value.getDocuments();
 
-                            if (list.size() == 1) {
-                                snapshot = list.get(0);
-                                Student student = snapshot.toObject(Student.class);
+                        if (list.size() == 1) {
+                            snapshot = list.get(0);
+                            Student student = snapshot.toObject(Student.class);
 
-                                text_email.setText(student.getEmail());
-                                text_name.setText(student.getName());
-                                text_course.setText(student.getCourse());
-                                text_image.setText(student.getImage());
+                            text_email.setText(student.getEmail());
+                            text_name.setText(student.getName());
+                            text_course.setText(student.getCourse());
+                            text_image.setText(student.getImage());
 
-                                enableMatrikSearch(false);
+                            enableMatrikSearch(false);
 
-                                text_name.setDisable(false);
-                                text_course.setDisable(false);
-                                text_image.setDisable(false);
-                            }
+                            text_name.setDisable(false);
+                            text_course.setDisable(false);
+                            text_image.setDisable(false);
                         }
                     }
                 });
@@ -137,61 +127,45 @@ public class StudentFormController extends ControllerExtended implements Initial
 
             reference
                     .set(student)
-                    .addListener(new Runnable() {
-                        @Override
-                        public void run() {
-                            button_submit.setDisable(false);
-                        }
-                    }, new Executor() {
-                        @Override
-                        public void execute(Runnable command) {
-                            command.run();
-                        }
-                    });
+                    .addListener(() -> button_submit.setDisable(false), command -> command.run());
         }
     }
 
     private void setButton_search() {
 
-        button_search.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                String matrik_id = text_matrik.getText().trim();
+        button_search.setOnMouseClicked(event -> {
+            String matrik_id = text_matrik.getText().trim();
 
-                if (!matrik_id.isEmpty()) findStudent(matrik_id);
-            }
+            if (!matrik_id.isEmpty()) findStudent(matrik_id);
         });
     }
 
     private void setButton_submit() {
 
-        button_submit.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                // student data
-                String email = text_email.getText().trim();
-                String pass = text_password.getText().trim();
+        button_submit.setOnMouseClicked(event -> {
+            // student data
+            String email = text_email.getText().trim();
+            String pass = text_password.getText().trim();
 
-                String matrik = text_matrik.getText().trim();
-                String name = text_name.getText().trim();
-                String course = text_course.getText().trim();
-                String image = text_image.getText().trim();
+            String matrik = text_matrik.getText().trim();
+            String name = text_name.getText().trim();
+            String course = text_course.getText().trim();
+            String image = text_image.getText().trim();
 
-                // store student object
-                Student student;
+            // store student object
+            Student student;
 
-                if (snapshot != null) student = snapshot.toObject(Student.class);
-                else student = new Student();
+            if (snapshot != null) student = snapshot.toObject(Student.class);
+            else student = new Student();
 
-                student.setMatrik_id(matrik);
-                student.setName(name);
-                student.setEmail(email);
-                student.setCourse(course);
-                student.setImage(image);
+            student.setMatrik_id(matrik);
+            student.setName(name);
+            student.setEmail(email);
+            student.setCourse(course);
+            student.setImage(image);
 
-                if (snapshot != null) updateStudent(student);
-                else createStudent(student, email, pass);
-            }
+            if (snapshot != null) updateStudent(student);
+            else createStudent(student, email, pass);
         });
     }
 
@@ -213,21 +187,18 @@ public class StudentFormController extends ControllerExtended implements Initial
 
     private void setGroupRadioButton() {
         toggle.getToggles().addAll(radio_edit, radio_new);
-        toggle.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+        toggle.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
-                RadioButton radio = (RadioButton) toggle.getSelectedToggle();
+            RadioButton radio = (RadioButton) toggle.getSelectedToggle();
 
-                if (radio == radio_new) {
-                    enableDetailEdited(true);
+            if (radio == radio_new) {
+                enableDetailEdited(true);
 
-                    resetStudent();
+                resetStudent();
 
-                } else {
-                    enableDetailEdited(false);
-                    enableMatrikSearch(true);
-                }
+            } else {
+                enableDetailEdited(false);
+                enableMatrikSearch(true);
             }
         });
 
