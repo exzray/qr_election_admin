@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.CampaignController">
+   <children>
+      <VBox alignment="TOP_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+         <children>
+            <Label prefHeight="30.0" prefWidth="388.0" text="Campaign Info">
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <ListView fx:id="list_campaign" prefHeight="200.0" prefWidth="200.0" />
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
+                  <Button fx:id="button_clear" layoutX="244.0" layoutY="10.0" mnemonicParsing="false" prefWidth="64.0" text="Clear" />
+                  <Button fx:id="button_remove" layoutX="74.0" layoutY="10.0" mnemonicParsing="false" prefWidth="64.0" text="Remove" />
+                  <Button fx:id="button_position" layoutX="244.0" layoutY="10.0" mnemonicParsing="false" prefWidth="100.0" text="View Position" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="6.0" top="6.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </HBox>
+            <VBox spacing="20.0">
+               <children>
+                  <JFXTextField fx:id="field_title" labelFloat="true" promptText="Title" />
+                  <JFXTextField fx:id="field_description" labelFloat="true" layoutX="10.0" layoutY="10.0" promptText="Description" />
+                  <JFXTextField fx:id="field_image" labelFloat="true" layoutX="10.0" layoutY="10.0" promptText="Image" />
+               </children>
+            </VBox>
+            <Button fx:id="button_submit" mnemonicParsing="false" prefWidth="100.0" text="Submit">
+               <VBox.margin>
+                  <Insets top="16.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
